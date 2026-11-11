@@ -111,7 +111,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 <script>
 "use strict";
 /* ============ SOZLAMALAR ============ */
-const CFG={name:"Dilbarxon",mascot:"🐰",mascotName:"Zukko",round:6};
+const CFG={name:"Dilbarxon",mascot:"🐰",mascotName:"Zukko",round:6,
+ /* Hisobot manzili (Google Apps Script). Bo'sh bo'lsa hech narsa jo'natilmaydi */
+ report:""};
 
 /* ============ YORDAMCHI ============ */
 const $=s=>document.querySelector(s), app=$("#app");
@@ -337,6 +339,9 @@ function tone(seq){try{AC=AC||new(window.AudioContext||window.webkitAudioContext
  for(const[f,d]of seq){const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);t+=d*.8}}catch(e){}}
 const fx={ok(){tone([[660,.12],[880,.18]]);hap("success")},no(){tone([[300,.2]]);hap("error")},win(){tone([[523,.12],[659,.12],[784,.12],[1047,.3]]);hap("success")},tap(){try{tg&&tg.HapticFeedback.impactOccurred("light")}catch(e){}}};
 function hap(k){try{tg&&tg.HapticFeedback.notificationOccurred(k)}catch(e){}}
+/* natijani egasiga jo'natish — o'yinga ta'sir qilmaydi */
+function report(ev,data){try{if(!CFG.report||!inTg)return;
+ fetch(CFG.report,{method:"POST",mode:"no-cors",keepalive:true,body:JSON.stringify(Object.assign({ev,init:tg.initData,name:S.name,stars:S.stars,streak:S.streak},data||{}))}).catch(()=>{})}catch(e){}}
 const canSay=()=>"speechSynthesis"in window&&typeof SpeechSynthesisUtterance!=="undefined";
 function say(s){if(!s||!canSay())return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(s.t);u.lang=s.l;u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
 
@@ -392,8 +397,8 @@ function play(gid){
  const g=GM[gid],L=level(g),used=new Set();
  if(g.memory)return memory(g,L);
  const queue=[];for(let i=0;i<CFG.round;i++){const it=pickItem(g,L,used);used.add(it.id);queue.push({it,first:true})}
- let pos=0,miss=0,total=queue.length;
- const next=()=>{if(pos>=queue.length)return result(g,L,miss,total);ask(queue[pos])};
+ let pos=0,miss=0,total=queue.length;const wrong=[];
+ const next=()=>{if(pos>=queue.length)return result(g,L,miss,total,wrong);ask(queue[pos])};
  function ask(cur){
   const q=g.make(cur.it,L);
   const head=`<div class="top"><button class="back" id="x">✕</button><div class="dots">${Array.from({length:total},(_,i)=>`<i class="${i<total-(queue.length-pos)?"on":i===total-(queue.length-pos)?"cur":""}"></i>`).join("")}</div><span style="width:48px;text-align:center;font-size:26px">${g.e}</span></div>`;
@@ -422,7 +427,7 @@ function play(gid){
    const h=$("#hint");
    if(ok){fx.ok();h.className="hint g";h.textContent=one(["To'g'ri! 🎉","Barakalla! ⭐","Zo'r! 👏","Ofarin! 🌟"]);if(q.say)say(q.say)}
    else{fx.no();h.className="hint";h.textContent="Mana to'g'ri javob. Yana urinib ko'ramiz!";showAns&&showAns()}
-   if(cur.first){mark(g,cur.it,ok);if(!ok)miss++}
+   if(cur.first){mark(g,cur.it,ok);if(!ok){miss++;wrong.push(cur.it.id)}}
    if(!ok&&cur.first)queue.splice(Math.min(queue.length,pos+3),0,{it:cur.it,first:false});
    pos++;setTimeout(next,ok?850:1900)}
  }
@@ -444,7 +449,7 @@ function memory(g,L){
 }
 
 /* ---------- natija ---------- */
-function result(g,L,miss,total){
+function result(g,L,miss,total,wrong){
  const stars=miss===0?3:miss<=2?2:1;S.stars+=stars;
  const t=today();S.days[t]=(S.days[t]||0)+1;
  const lv=S.lv[g.id]||[1,0];let up=false;
@@ -454,6 +459,7 @@ function result(g,L,miss,total){
  if(adv){const a=advState();a.n=Math.max(a.n,adv.i+1);adv.i++;
   if(a.n>=3&&S.last!==t){S.streak=S.last===t-1?S.streak+1:1;S.last=t;advDone=true}}
  save();fx.win();confetti();
+ report("round",{game:g.n,fan:FAN[g.fan][0],level:L,got:stars,miss,total,wrong:(wrong||[]).join(", "),adv:advDone?1:0});
  const msg=up?`Yangi bosqich ochildi: ${lv[0]}-bosqich! 🚀`:miss===0?"Birorta ham xato yo'q!":miss<=2?"Juda yaxshi! Xatolarni ertaga yana ko'ramiz.":"Yaxshi harakat! Bu o'yinni yana mashq qilamiz.";
  const more=adv&&adv.i<3;
  app.innerHTML=`<div class="scr res"><div class="stars">${[1,2,3].map(i=>`<i class="${i<=stars?"on":""}">⭐</i>`).join("")}</div>
@@ -489,7 +495,7 @@ function parent(){
 /* ============ ISHGA TUSHIRISH ============ */
 try{if(tg){tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#FFF6E5");tg.setBackgroundColor&&tg.setBackgroundColor("#FFF6E5");tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}}catch(e){}
 app.innerHTML=`<div class="scr res"><div class="bunny">${CFG.mascot}</div></div>`;
-load(home);
+load(()=>{home();report("open")});
 window.__zukko={G,GM,S:()=>S,play,home,parent,level};
 </script>
 </body>
