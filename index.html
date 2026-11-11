@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Zukko</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FFF6E5;--ink:#1F2A44;--mut:#6B7390;--line:#EADFCB;--ona:#FF6B5E;--mat:#3D7BF7;--tab:#2DB67D;--ing:#8B5CF6;--rus:#12A8B5;--man:#F59E0B;--ok:#2DB67D;--bad:#FF8A3D;--c:var(--ona)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{height:100%;background:var(--bg);overflow:hidden}
+body{font-family:Nunito,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);font-weight:700}
+#app{max-width:520px;height:100%;margin:0 auto;display:flex;flex-direction:column;padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.scr{flex:1;display:flex;flex-direction:column;min-height:0;animation:in .25s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.top{display:flex;justify-content:space-between;align-items:center;font-weight:900;font-size:18px;min-height:44px}
+.chip{background:#fff;border:2px solid var(--line);border-radius:99px;padding:6px 14px}
+/* home */
+.hi{display:flex;align-items:flex-end;gap:10px;margin:10px 0 14px}
+.bunny{font-size:76px;line-height:1;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-3deg)}}
+.bub{background:#fff;border:2px solid var(--line);border-radius:22px 22px 22px 4px;padding:12px 16px;font-size:19px;line-height:1.3;font-weight:800;flex:1}
+.bub.c{border-radius:22px;text-align:center}
+.shelf{display:flex;gap:6px;align-items:center;margin-bottom:12px;font-size:13px;color:var(--mut)}
+.shelf i{font-style:normal;font-size:24px;filter:grayscale(1);opacity:.3}
+.shelf i.on{filter:none;opacity:1}
+.big{display:block;width:100%;background:var(--ona);color:#fff;border-radius:26px;padding:20px 12px;font-size:25px;font-weight:900;box-shadow:0 7px 0 #D94A3E;transition:transform .08s,box-shadow .08s}
+.big small{display:block;font-size:15px;font-weight:700;opacity:.92;margin-top:2px}
+.big:active{transform:translateY(5px);box-shadow:0 2px 0 #D94A3E}
+.big.g{background:var(--ok);box-shadow:0 7px 0 #1F8E60}.big.g:active{box-shadow:0 2px 0 #1F8E60}
+.big.w{background:#fff;color:var(--ink);box-shadow:0 7px 0 var(--line);border:2px solid var(--line)}
+.sub{font-size:15px;color:var(--mut);margin:18px 2px 8px;font-weight:800}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{background:var(--c);color:#fff;border-radius:22px;padding:14px 4px 10px;font-size:34px;line-height:1.1;box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.tile span{display:block;font-size:14px;font-weight:900;margin-top:4px}
+.tile:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.grow{flex:1}
+.par{font-size:13px;color:var(--mut);text-align:center;padding:10px;font-weight:700}
+/* list */
+.list{overflow:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:10px}
+.row{display:flex;align-items:center;gap:14px;background:#fff;border:2px solid var(--line);border-left:8px solid var(--c);border-radius:20px;padding:12px 14px;text-align:left;width:100%}
+.row b{font-size:36px}.row div{flex:1;font-size:19px;font-weight:900}.row small{display:block;font-size:13px;color:var(--mut);font-weight:700}
+.back{font-size:26px;width:48px;height:48px;border-radius:50%;background:#fff;border:2px solid var(--line)}
+/* game */
+.dots{display:flex;gap:6px}.dots i{width:14px;height:14px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--ok)}.dots i.cur{background:var(--c)}
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;text-align:center;padding:6px 0}
+.pic{font-size:96px;line-height:1.15}
+.pic.m{font-size:30px;line-height:1.25;letter-spacing:2px;max-width:340px;word-break:break-all}
+.pic.s{font-size:20px;line-height:1.2;letter-spacing:1px;max-width:330px;word-break:break-all}
+.bigt{font-size:54px;font-weight:900;line-height:1.15;letter-spacing:1px}
+.bigt.w{font-size:42px}
+.bigt.sm{font-size:26px;line-height:1.3;padding:0 6px}
+.ask{font-size:21px;font-weight:800;margin-top:8px;padding:0 6px;line-height:1.25}
+.say{font-size:26px;width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--line);margin-top:8px}
+.cells{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.cell{min-width:46px;height:56px;padding:0 8px;border-radius:14px;background:#fff;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
+.cell.q{background:var(--c);color:#fff;border-color:var(--c)}
+.cell.e{border-style:dashed;color:transparent}
+.groups{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:350px;margin-bottom:6px}
+.groups div{background:#fff;border:2px solid var(--line);border-radius:14px;padding:4px 8px;font-size:22px;letter-spacing:1px}
+.opts{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.opts.c1{grid-template-columns:1fr}.opts.c3{grid-template-columns:repeat(3,1fr)}
+.opt{background:#fff;border:2px solid var(--line);border-radius:22px;min-height:76px;padding:8px;font-size:38px;font-weight:900;box-shadow:0 5px 0 var(--line);display:flex;align-items:center;justify-content:center;line-height:1.1;transition:transform .08s}
+.opt.t{font-size:26px}.opt.e{font-size:50px}
+.opt:active{transform:translateY(3px)}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff;box-shadow:0 5px 0 #1F8E60;animation:pop .35s}
+.opt.no{background:#FFE3D1;border-color:var(--bad);box-shadow:0 5px 0 var(--bad);animation:shake .35s}
+.opt.dim{opacity:.35}
+@keyframes pop{50%{transform:scale(1.07)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.opt svg{width:58px;height:58px}
+.hint{min-height:30px;font-size:18px;font-weight:800;color:var(--bad);text-align:center;margin:6px 0}
+.hint.g{color:var(--ok)}
+/* memory */
+.mem{display:grid;gap:10px;width:100%;grid-template-columns:repeat(3,1fr)}
+.mem.c4{grid-template-columns:repeat(4,1fr)}
+.card{aspect-ratio:1;border-radius:18px;background:var(--c);box-shadow:0 5px 0 rgba(0,0,0,.18);font-size:40px;font-weight:900;color:transparent;display:flex;align-items:center;justify-content:center;overflow:hidden;line-height:1}
+.card.t{font-size:19px}.card.d{font-size:15px;letter-spacing:1px;padding:4px;word-break:break-all;line-height:1.1}
+.card:not(.up):not(.done){font-size:0}
+.card.up{background:#fff;color:var(--ink);border:2px solid var(--line);box-shadow:0 5px 0 var(--line)}
+.card.done{background:#E4F6EE;color:var(--ink);border:2px solid var(--ok);box-shadow:none}
+/* result */
+.res{align-items:center;justify-content:center;text-align:center;gap:10px}
+.stars{font-size:60px;letter-spacing:6px}.stars i{font-style:normal;opacity:.2;filter:grayscale(1)}.stars i.on{opacity:1;filter:none;display:inline-block;animation:pop .5s backwards}
+.stars i.on:nth-child(2){animation-delay:.2s}.stars i.on:nth-child(3){animation-delay:.4s}
+.h1{font-size:36px;font-weight:900;color:var(--ona)}
+.res .big{margin-top:10px}
+.res .bub{flex:none;width:100%}
+.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
+.conf i{position:absolute;top:-30px;font-style:normal;font-size:26px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+/* parent */
+.pr{overflow:auto;font-weight:700;font-size:15px}
+.pr h2{font-size:18px;font-weight:900;margin:16px 0 8px}
+.pr .box{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px 14px}
+.week{display:flex;gap:6px;align-items:flex-end;height:90px}
+.week div{flex:1;text-align:center;font-size:11px;color:var(--mut);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.week i{display:block;background:var(--mat);border-radius:6px 6px 0 0;min-height:3px}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)}.kv:last-child{border:0}
+.kv b{font-weight:900}
+.tag{display:inline-block;background:#FFE9E6;color:#D94A3E;border-radius:10px;padding:4px 10px;margin:3px;font-weight:900}
+.pr input{font:inherit;border:2px solid var(--line);border-radius:12px;padding:8px 12px;width:100%;user-select:text;-webkit-user-select:text}
+.lnk{color:#D94A3E;text-decoration:underline;padding:14px;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============ SOZLAMALAR ============ */
+const CFG={name:"Dilbarxon",mascot:"🐰",mascotName:"Zukko",round:6};
+
+/* ============ YORDAMCHI ============ */
+const $=s=>document.querySelector(s), app=$("#app");
+const rnd=n=>Math.floor(Math.random()*n);
+const one=a=>a[rnd(a.length)];
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
+const uniq=a=>[...new Set(a)];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const tok=w=>w.match(/o'|g'|sh|ch|./g);
+const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+/* variantlar: to'g'ri javob + chalg'ituvchilar, aralashtirilgan */
+function mk(ans,wrong,n){const o=sh([ans,...sh(uniq(wrong.filter(x=>x!==ans))).slice(0,n-1)]);return{opts:o,ans:o.indexOf(ans)}}
+function nearNums(a,n,min=0,extra=[]){const c=uniq([...extra,a+1,a-1,a+2,a-2,a+10,a-10,a+3,a-3]).filter(x=>x>=min&&x!==a);return mk(a,c.slice(0,Math.max(n-1,3)),n)}
+
+/* ============ MAZMUN ============ */
+const WORDS=`ot|🐴 it|🐶 uy|🏠 oy|🌙 non|🍞 gul|🌹 qor|❄️ suv|💧 sut|🥛 tuz|🧂 qo'y|🐑 tog'|⛰️ nok|🍐 fil|🐘 to'p|⚽ qo'l|✋ ko'z|👁️ toj|👑 tish|🦷 qush|🐦 sher|🦁 tort|🎂
+a-ri|🐝 a-yiq|🐻 ol-ma|🍎 u-zum|🍇 i-lon|🐍 ke-ma|🚢 ko-sa|🥣 tu-ya|🐫 bo'-ri|🐺 a-sal|🍯 u-zuk|💍 so-at|⏰ e-shik|🚪
+gi-los|🍒 li-mon|🍋 ba-nan|🍌 qo-vun|🍈 tar-vuz|🍉 sab-zi|🥕 pi-yoz|🧅 ki-tob|📕 qa-lam|✏️ daf-tar|📒 mak-tab|🏫 ka-lit|🔑 qo-shiq|🥄 pi-choq|🔪 mu-shuk|🐱 si-gir|🐄 ech-ki|🐐 to-vuq|🐔 xo'-roz|🐓 o'r-dak|🦆 ba-liq|🐟 tul-ki|🦊 qu-yon|🐰 may-mun|🐒 da-raxt|🌳 qu-yosh|☀️ yul-duz|⭐ bu-lut|☁️ yom-g'ir|🌧️ po-yezd|🚂 qu-loq|👂 o-yoq|🦶 shap-ka|🧢 ko'y-lak|👗 pay-poq|🧦 sov-g'a|🎁 tu-xum|🥚 pish-loq|🧀 chi-roq|💡 qay-chi|✂️ choy-nak|🫖
+tosh-ba-qa|🐢 ka-pa-lak|🦋 qur-ba-qa|🐸 ka-ma-lak|🌈 ma-shi-na|🚗 sa-mol-yot|✈️ so-ya-bon|☂️ te-le-fon|📱 gi-ta-ra|🎸 ra-ke-ta|🚀 muz-qay-moq|🍦`
+ .split(/\s+/).map(x=>{const[s,e]=x.split("|"),sy=s.split("-"),w=sy.join("");return{w,e,sy,t:tok(w)}});
+const ABC="a b d e f g h i j k l m n o p q r s t u v x y z o' g' sh ch".split(" ");
+const VOW=["a","e","i","o","u","o'"], CON=ABC.filter(x=>!VOW.includes(x));
+const RIDDLES=[["U bizga sut beradi.","🐄","🐟","🚗"],["U suvda suzadi.","🐟","🐔","🐫"],["U kechasi osmonda ko'rinadi.","🌙","☀️","🌳"],["U bilan eshik ochamiz.","🔑","🥄","✏️"],["U bilan daftarga yozamiz.","✏️","🔑","⚽"],["U sabzini yaxshi ko'radi.","🐰","🐟","🦁"],["Yomg'irda uni ochamiz.","☂️","🧢","🎁"],["U vaqtni ko'rsatadi.","⏰","📕","🧦"],["U gullardan asal yig'adi.","🐝","🐍","🐢"],["Biz u yerda o'qiymiz.","🏫","🚢","🚂"],["U ertalab qichqiradi.","🐓","🐱","🐑"],["U relsda yuradi.","🚂","🚗","✈️"],["U juda uzun xartumli.","🐘","🐶","🐔"],["Uni oyoqqa kiyamiz.","🧦","🧢","💍"]];
+const FRUIT="🍎🍇🍌🍐🍒🍓🍑🍋🍊".match(/./gu), THING=["🍎","⭐","🌸","🐟","🎈","🍓","🥕","🐥"];
+/* shakllar */
+const SVG={
+ doira:c=>`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="${c}"/></svg>`,
+ uchburchak:c=>`<svg viewBox="0 0 60 60"><polygon points="30,5 57,54 3,54" fill="${c}"/></svg>`,
+ kvadrat:c=>`<svg viewBox="0 0 60 60"><rect x="7" y="7" width="46" height="46" rx="3" fill="${c}"/></svg>`,
+ "to'rtburchak":c=>`<svg viewBox="0 0 60 60"><rect x="2" y="15" width="56" height="30" rx="3" fill="${c}"/></svg>`,
+ beshburchak:c=>`<svg viewBox="0 0 60 60"><polygon points="30,4 57,24 47,56 13,56 3,24" fill="${c}"/></svg>`};
+const SHN=Object.keys(SVG), COL=["#FF6B5E","#3D7BF7","#2DB67D","#8B5CF6","#F59E0B"], CORN={doira:0,uchburchak:3,kvadrat:4,"to'rtburchak":4,beshburchak:5};
+const SHOBJ=[["⚽","doira"],["🪙","doira"],["🕐","doira"],["🍊","doira"],["🍕","uchburchak"],["📐","uchburchak"],["⛺","uchburchak"],["🚪","to'rtburchak"],["📱","to'rtburchak"],["📕","to'rtburchak"],["🧱","to'rtburchak"]];
+/* tabiat */
+const HOME=[["🐟","suv"],["🐬","suv"],["🐋","suv"],["🐙","suv"],["🐄","ferma"],["🐔","ferma"],["🐑","ferma"],["🐴","ferma"],["🐺","o'rmon"],["🦊","o'rmon"],["🐻","o'rmon"],["🐿️","o'rmon"],["🐫","cho'l"],["🦂","cho'l"],["🐧","muzlik"],["🐻‍❄️","muzlik"]];
+const HOMEE={suv:"🌊 Suv","ferma":"🏡 Ferma","o'rmon":"🌲 O'rmon","cho'l":"🏜️ Cho'l",muzlik:"🧊 Muzlik"};
+const FOOD=[["🐄","🌿",["🥕"]],["🐻","🍯",["🐟","🌰"]],["🐒","🍌",["🌰"]],["🐔","🌾",["🌿"]],["🐶","🦴",["🐟"]],["🐰","🥕",["🌿"]],["🐿️","🌰",["🌾"]],["🐱","🐟",["🦴"]]];
+const GIVES=[["🐄","🥛"],["🐔","🥚"],["🐝","🍯"],["🐑","🧶"]];
+const SEAS=["Qish","Bahor","Yoz","Kuz"], SEASE=[["⛄",0],["❄️",0],["🧤",0],["🎿",0],["🎄",0],["🌷",1],["🌱",1],["🐣",1],["🪁",1],["🏖️",2],["🍉",2],["🍦",2],["🩴",2],["🍂",3],["🍁",3],["🎒",3],["🌰",3]];
+const MONTHS=["Dekabr","Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avgust","Sentabr","Oktabr","Noyabr"];
+const DAYS=["Dushanba","Seshanba","Chorshanba","Payshanba","Juma","Shanba","Yakshanba"];
+const ALIVE=["🐱","🌳","🌹","🐟","🐦","🐝","🦋","👧","🐢","🌻"], DEAD=["🪨","🚗","⚽","📕","🏠","✏️","⏰","🔑","🪑","🧢"];
+const PLANT=["🌳","🌹","🌻","🌷","🌵","🌲","🍀","🌾"], ANIM=["🐱","🐟","🐦","🐝","🦋","🐢","🐘","🐸"];
+const MEVA=["🍎","🍇","🍌","🍐","🍒","🍑","🍋","🍊"], SABZ=["🥕","🧅","🥔","🥒","🌽","🧄","🍆","🥬"];
+/* ingliz — darslik bo'limlari: Hello, School, Toys, Family, At home */
+const ENCOL=[["red","#E53935"],["blue","#1E63E9"],["green","#2DB67D"],["yellow","#FFD600"],["black","#111"],["white","#fff"],["orange","#FB8C00"],["pink","#FF7EB6"],["purple","#8B5CF6"],["brown","#8D5A3B"]];
+const ENNUM="one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".split(" ");
+const EN1=[["book","📕"],["pen","🖊️"],["pencil","✏️"],["bag","🎒"],["chair","🪑"],["ruler","📏"],["ball","⚽"],["doll","🪆"],["car","🚗"],["kite","🪁"],["bike","🚲"],["teddy","🧸"],["robot","🤖"],["train","🚂"]];
+const EN2=[["mum","👩"],["dad","👨"],["baby","👶"],["grandma","👵"],["grandpa","👴"],["bed","🛏️"],["door","🚪"],["house","🏠"],["sofa","🛋️"],["cat","🐱"],["dog","🐶"],["fish","🐟"],["bird","🐦"],["apple","🍎"],["milk","🥛"],["egg","🥚"],["sun","☀️"],["tree","🌳"]];
+const RU=[["кошка","🐱"],["собака","🐶"],["дом","🏠"],["мяч","⚽"],["книга","📕"],["яблоко","🍎"],["солнце","☀️"],["вода","💧"],["хлеб","🍞"],["молоко","🥛"],["рыба","🐟"],["птица","🐦"],["цветок","🌹"],["машина","🚗"],["дерево","🌳"],["мама","👩"],["папа","👨"],["школа","🏫"]];
+const RUNUM="один два три четыре пять шесть семь восемь девять десять".split(" ");
+/* mantiq */
+const CATS=[["🐱","🐶","🐄","🐴","🐑","🐘"],["🍎","🍌","🍇","🍐","🍒","🍓"],["🚗","🚂","✈️","🚢","🚲","🚌"],["✏️","📕","📒","🎒","📏","🖊️"],["🧢","👗","🧦","🧤","👟","🧣"],["🌹","🌻","🌷","🌳","🌵","🌲"]];
+const PAT=["🔴","🔵","🟡","🟢","⭐","❤️","🌸","🍎"];
+
+/* ============ O'YINLAR ============
+ Har o'yin: id, fan, emoji, nom, lv (bosqichlar soni), pool(L) -> [{id,...}], make(item,L) -> savol
+ Savol turlari: choice {pic,picCls,big,bigCls,html,q,opts,ans,cols,optCls,say} | build {pic,q,parts,answer} | memory {pairs}  */
+const byLen=(a,b)=>WORDS.filter(x=>x.t.length>=a&&x.t.length<=b);
+const cells=(arr,qi)=>`<div class="cells">${arr.map((x,i)=>`<span class="cell${i===qi?" q":""}">${i===qi?"?":esc(x)}</span>`).join("")}</div>`;
+const G=[
+/* ---------- ONA TILI ---------- */
+{id:"bh",fan:"ona",e:"🍎",n:"Bosh harf",lv:3,
+ pool:L=>(L<3?WORDS:WORDS.filter(x=>x.t.length>2)).map(x=>({id:x.w,x})),
+ make({x},L){
+  if(L===3)return{pic:x.e,big:x.w,bigCls:"w",q:"Nechta bo'g'in bor?",...mk(x.sy.length,[1,2,3],3),cols:3};
+  const a=L===1?x.t[0]:x.t[x.t.length-1];
+  const o=mk(cap(a),ABC.map(cap),4);
+  return{pic:x.e,q:L===1?"Qaysi harfdan boshlanadi?":"Qaysi harf bilan tugaydi?",...o}}},
+{id:"yh",fan:"ona",e:"🧩",n:"Yo'qolgan harf",lv:3,
+ pool:L=>(L===3?byLen(5,9):byLen(3,5)).map(x=>({id:x.w,x})),
+ make({x},L){
+  let idx=x.t.map((_,i)=>i).filter(i=>L===3||(L===1)===VOW.includes(x.t[i]));
+  if(!idx.length)idx=x.t.map((_,i)=>i);
+  const i=one(idx),a=x.t[i],v=VOW.includes(a);
+  return{pic:x.e,html:cells(x.t,i),q:"Qaysi harf yo'qolgan?",...mk(a,v?VOW:CON,L===1?3:4),cols:L===1?3:2}}},
+{id:"sy",fan:"ona",e:"✏️",n:"So'z yig'uvchi",lv:3,
+ pool:L=>(L===1?byLen(3,3):L===2?byLen(4,4):byLen(5,6)).map(x=>({id:x.w,x})),
+ make({x},L){const parts=x.t.slice();if(L===3)parts.push(one(ABC.filter(c=>!x.t.includes(c))));
+  return{type:"build",pic:x.e,q:"Harflarni terib so'z yoz",parts:sh(parts),answer:x.t}}},
+{id:"bp",fan:"ona",e:"🚂",n:"Bo'g'in poyezdi",lv:3,
+ pool:L=>WORDS.filter(x=>L===3?x.sy.length===3:x.sy.length===2).map(x=>({id:x.w,x})),
+ make({x},L){const parts=x.sy.slice();
+  if(L===2){const all=uniq(WORDS.flatMap(w=>w.sy)).filter(s=>!x.sy.includes(s)&&s.length>1);parts.push(one(all))}
+  return{type:"build",pic:x.e,q:"Bo'g'inlarni to'g'ri tartibda ula",parts:sh(parts),answer:x.sy,wide:1}}},
+{id:"rs",fan:"ona",e:"🖼️",n:"Rasm va so'z",lv:3,
+ pool:L=>L===3?RIDDLES.map(r=>({id:r[1],r})):WORDS.map(x=>({id:x.w,x})),
+ make(it,L){
+  if(L===3){const r=it.r;return{big:r[0],bigCls:"sm",q:"Bu nima?",...mk(r[1],[r[2],r[3]],3),cols:3,optCls:"e"}}
+  const x=it.x;
+  if(L===1)return{big:x.w,q:"So'zni o'qi va rasmini top",...mk(x.e,WORDS.map(w=>w.e),3),cols:3,optCls:"e"};
+  const same=WORDS.filter(w=>w.t[0]===x.t[0]&&w.w!==x.w).map(w=>w.w);
+  return{pic:x.e,q:"Qaysi so'z to'g'ri?",...mk(x.w,[...same,...sh(WORDS).slice(0,4).map(w=>w.w)],3),cols:1,optCls:"t"}}},
+/* ---------- MATEMATIKA ---------- */
+{id:"sn",fan:"mat",e:"🌳",n:"Sanoq bog'i",lv:3,noBox:1,
+ pool:L=>{const[a,b]=[[3,10],[11,20],[21,30]][L-1];return Array.from({length:b-a+1},(_,i)=>({id:""+(a+i),v:a+i}))},
+ make({v},L){const e=one(THING);let s="";for(let i=1;i<=v;i++){s+=e;if(i%(L===1?5:10)===0&&i<v)s+="<br>";else if(L>1&&i%5===0&&i<v)s+=" "}
+  return{pic:s,picCls:L===1?"m":"s",q:"Nechta?",...nearNums(v,4,1)}}},
+{id:"qa",fan:"mat",e:"➕",n:"Qo'shish va ayirish",lv:4,
+ pool:L=>{const r=[],[lo,hi]=[[2,10],[11,20],[21,30],[11,20]][L-1],mb=L===3?9:10;
+  for(let a=1;a<=30;a++)for(let b=1;b<=mb;b++){
+   if(a+b>=lo&&a+b<=hi&&(L!==1||a>=b||true))r.push({id:`${a}+${b}`,a,b,op:"+",v:a+b});
+   if(a>b&&a>=lo&&a<=hi)r.push({id:`${a}−${b}`,a,b,op:"−",v:a-b})}
+  return r},
+ make(it,L){
+  if(L===4){const big=it.op==="+"?`${it.a} + ? = ${it.v}`:`${it.a} − ? = ${it.v}`;return{big,q:"Yo'qolgan sonni top",...nearNums(it.b,4,0)}}
+  return{big:`${it.a} ${it.op} ${it.b} = ?`,q:"Hisobla",...nearNums(it.v,4,0)}}},
+{id:"tq",fan:"mat",e:"⚖️",n:"Katta, kichik, teng",lv:3,noBox:1,
+ pool:L=>Array.from({length:30},(_,i)=>{const m=L===2?50:20;
+  if(L<3){const a=1+rnd(m);const b=i%5===0?a:1+rnd(m);return{id:`${a}?${b}`,l:a,r:b,ls:a,rs:b}}
+  const a=1+rnd(9),b=1+rnd(9),c=i%4===0?a+b:Math.max(1,a+b+rnd(7)-3);return{id:`${a}+${b}?${c}`,l:a+b,r:c,ls:`${a} + ${b}`,rs:c}}),
+ make(it){const s=it.l>it.r?">":it.l<it.r?"<":"=";const o=[">","<","="];
+  return{big:`${it.ls} <span style="color:var(--c)">?</span> ${it.rs}`,q:"Qaysi belgi qo'yiladi?",opts:o,ans:o.indexOf(s),cols:3}}},
+{id:"sq",fan:"mat",e:"🔢",n:"Sonlar qatori",lv:3,noBox:1,
+ pool:L=>Array.from({length:30},()=>{const st=L===3?one([2,5,10]):1;const s0=L===3?st*(1+rnd(st===10?6:4)):1+rnd(26);
+  let a=[0,1,2,3].map(i=>s0+i*st);if(L===2)a.reverse();const h=rnd(4);return{id:a.join("-")+"/"+h,a,h}}),
+ make({a,h}){const v=a[h];return{html:cells(a,h),q:"Yo'qolgan sonni top",...nearNums(v,4,0,[v+Math.abs(a[1]-a[0]),v-Math.abs(a[1]-a[0])])}}},
+{id:"sk",fan:"mat",e:"🔺",n:"Shakllar",lv:3,noBox:1,
+ pool:L=>L===2?SHOBJ.map(o=>({id:o[0],o})):SHN.slice(0,L===1?4:5).map(s=>({id:s,s})),
+ make(it,L){
+  if(L===2){const o=["Doira","Uchburchak","To'rtburchak"];return{pic:it.o[0],q:"Bu qaysi shaklga o'xshaydi?",opts:o,ans:o.indexOf(cap(it.o[1])),cols:1,optCls:"t"}}
+  if(L===3)return{html:`<div style="width:130px">${SVG[it.s](one(COL))}</div>`,q:"Nechta burchagi bor?",...mk(CORN[it.s],[0,3,4,5],4)};
+  const sel=mk(it.s,SHN.slice(0,4),4),cs=sh(COL);
+  return{big:cap(it.s),bigCls:"w",q:"Shu shaklni top",opts:sel.opts.map((s,i)=>({h:SVG[s](cs[i])})),ans:sel.ans}}},
+{id:"kr",fan:"mat",e:"✖️",n:"Karra jadvali",lv:5,
+ pool:L=>{const tb=[[2],[3],[4,5],[6,7],[8,9,10]][L-1],r=[];
+  for(const t of tb)for(let a=1;a<=10;a++)r.push({id:`${a}×${t}`,a,b:t});return r},
+ make({a,b},L){const v=a*b;let html="";
+  if(v<=24&&L<=3){const e=one(THING);html=`<div class="groups">${Array(a).fill(`<div>${e.repeat(b)}</div>`).join("")}</div>`}
+  return{html,big:`${a} × ${b} = ?`,q:html?`${a} ta guruh, har birida ${b} tadan`:"Ko'paytir",...mk(v,[v+b,v-b,v+a,v-a,v+1,v-1,v+2].filter(x=>x>0),4)}}},
+/* ---------- TABIIY FANLAR ---------- */
+{id:"ky",fan:"tab",e:"🏡",n:"Kim qayerda yashaydi",lv:3,
+ pool:L=>(L===1?HOME:L===2?FOOD:GIVES).map(x=>({id:x[0],x})),
+ make({x},L){
+  if(L===1)return{pic:x[0],q:"U qayerda yashaydi?",...mk(HOMEE[x[1]],Object.values(HOMEE),3),cols:1,optCls:"t"};
+  if(L===2)return{pic:x[0],q:"U nimani yaxshi ko'radi?",...mk(x[1],FOOD.map(f=>f[1]).filter(f=>!x[2].includes(f)),3),cols:3,optCls:"e"};
+  return{pic:x[0],q:"U bizga nima beradi?",...mk(x[1],GIVES.map(g=>g[1]),4),optCls:"e"}}},
+{id:"fs",fan:"tab",e:"🍂",n:"Fasllar va vaqt",lv:3,
+ pool:L=>L===1?SEASE.map(x=>({id:x[0],x})):L===2?MONTHS.map((m,i)=>({id:m,m,i})):DAYS.map((d,i)=>({id:d,d,i})),
+ make(it,L){
+  if(L===1)return{pic:it.x[0],q:"Bu qaysi fasl?",opts:SEAS,ans:it.x[1],optCls:"t"};
+  if(L===2)return{big:it.m,bigCls:"w",q:"Bu oy qaysi faslda?",opts:SEAS,ans:Math.floor(it.i/3),optCls:"t"};
+  const nx=DAYS[(it.i+1)%7];return{big:it.d,bigCls:"w",q:"Undan keyin qaysi kun keladi?",...mk(nx,DAYS.filter(d=>d!==it.d),3),cols:1,optCls:"t"}}},
+{id:"tn",fan:"tab",e:"🌱",n:"Tirik va notirik",lv:3,
+ pool:L=>{const[A,B]=L===1?[ALIVE,DEAD]:L===2?[PLANT,ANIM]:[MEVA,SABZ];return[...A.map(e=>({id:e,e,k:0})),...B.map(e=>({id:e,e,k:1}))]},
+ make(it,L){const o=[["🌿 Tirik","🪨 Notirik"],["🌳 O'simlik","🐾 Hayvon"],["🍎 Meva","🥕 Sabzavot"]][L-1];
+  return{pic:it.e,q:"Bu qaysi guruhga kiradi?",opts:o,ans:it.k,cols:1,optCls:"t"}}},
+/* ---------- INGLIZ TILI ---------- */
+{id:"cn",fan:"ing",e:"🎨",n:"Colors & Numbers",lv:3,
+ pool:L=>L===1?ENCOL.map(c=>({id:c[0],c})):ENNUM.slice(L===2?0:10,L===2?10:20).map((w,i)=>({id:w,w,v:i+(L===2?1:11)})),
+ make(it,L){
+  if(L===1)return{html:`<div style="width:120px;height:120px;border-radius:28px;border:3px solid var(--line);background:${it.c[1]}"></div>`,q:"What colour is it?",...mk(it.c[0],ENCOL.map(c=>c[0]),4),optCls:"t",say:{t:it.c[0],l:"en-US"}};
+  return{big:it.v,q:"Which number is it?",...mk(it.w,ENNUM.slice(L===2?0:10,L===2?10:20),4),optCls:"t",say:{t:it.w,l:"en-US"}}}},
+{id:"pw",fan:"ing",e:"🧸",n:"Picture Words",lv:3,
+ pool:L=>(L===1?EN1:L===2?EN2:[...EN1,...EN2]).map(x=>({id:x[0],x})),
+ make({x},L){const all=[...EN1,...EN2];
+  if(L===3)return{big:x[0],bigCls:"w",q:"Find the picture",...mk(x[1],all.map(a=>a[1]),4),optCls:"e",say:{t:x[0],l:"en-US"}};
+  return{pic:x[1],q:"What is it?",...mk(x[0],(L===1?EN1:EN2).map(a=>a[0]),4),optCls:"t",say:{t:x[0],l:"en-US"}}}},
+/* ---------- RUS TILI ---------- */
+{id:"rk",fan:"rus",e:"🪆",n:"Слово и картинка",lv:3,
+ pool:L=>L===3?RUNUM.map((w,i)=>({id:w,w,v:i+1})):RU.map(x=>({id:x[0],x})),
+ make(it,L){
+  if(L===3)return{big:it.v,q:"Какое это число?",...mk(it.w,RUNUM,4),optCls:"t",say:{t:it.w,l:"ru-RU"}};
+  const x=it.x;
+  if(L===1)return{pic:x[1],q:"Что это?",...mk(x[0],RU.map(a=>a[0]),4),optCls:"t",say:{t:x[0],l:"ru-RU"}};
+  return{big:x[0],bigCls:"w",q:"Найди картинку",...mk(x[1],RU.map(a=>a[1]),4),optCls:"e",say:{t:x[0],l:"ru-RU"}}}},
+/* ---------- MANTIQ ---------- */
+{id:"xk",fan:"man",e:"🃏",n:"Xotira kartalari",lv:3,noBox:1,memory:1,
+ pool:()=>[{id:"m"}],
+ make(_,L){
+  if(L===1)return{type:"memory",pairs:sh(WORDS).slice(0,3).map(w=>[w.e,w.e]),cols:3};
+  if(L===2)return{type:"memory",pairs:sh([2,3,4,5,6,7,8,9]).slice(0,4).map(n=>[{t:""+n},{d:"●".repeat(n)}]),cols:4};
+  return{type:"memory",pairs:sh(byLen(3,5)).slice(0,6).map(w=>[w.e,{w:w.w}]),cols:4}}},
+{id:"oq",fan:"man",e:"🔍",n:"Ortiqchasini top",lv:3,noBox:1,
+ pool:L=>Array.from({length:24},(_,i)=>({id:"o"+i})),
+ make(_,L){
+  if(L===3){const t=rnd(4);let grp,odd;
+   if(t===0){grp=sh([2,4,6,8,10,12]).slice(0,3);odd=one([1,3,5,7,9])}
+   else if(t===1){grp=sh([1,3,5,7,9,11]).slice(0,3);odd=one([2,4,6,8])}
+   else if(t===2){grp=sh(VOW).slice(0,3).map(cap);odd=cap(one(CON))}
+   else{grp=sh(CON).slice(0,3).map(cap);odd=cap(one(VOW))}
+   const o=sh([...grp,odd]);return{q:["Juft sonlar ichida ortiqchasi qaysi?","Toq sonlar ichida ortiqchasi qaysi?","Unli harflar ichida ortiqchasi qaysi?","Undosh harflar ichida ortiqchasi qaysi?"][t],opts:o,ans:o.indexOf(odd)}}
+  if(L===2){const s=sh(SHN.slice(0,4)),c=sh(COL),o=sh([0,0,0,1]);
+   return{q:"Qaysi biri boshqalarga o'xshamaydi?",opts:o.map((k,i)=>({h:SVG[s[k]](c[i])})),ans:o.indexOf(1)}}
+  const[a,b]=sh(CATS),o=sh([...sh(a).slice(0,3),one(b)]);
+  return{q:"Qaysi biri ortiqcha?",opts:o,ans:o.findIndex(x=>b.includes(x)),optCls:"e"}}},
+{id:"nq",fan:"man",e:"🔴",n:"Naqsh davomi",lv:3,noBox:1,
+ pool:()=>Array.from({length:24},(_,i)=>({id:"n"+i})),
+ make(_,L){const p=sh(PAT),unit=L===1?[p[0],p[1]]:L===2?one([[p[0],p[0],p[1]],[p[0],p[1],p[1]]]):[p[0],p[1],p[2]];
+  const len=L===1?5:L===2?7:7,seq=Array.from({length:len+1},(_,i)=>unit[i%unit.length]),a=seq.pop();
+  return{pic:seq.join("")+"❓",picCls:"m",q:"Keyingisi qaysi?",...mk(a,[...unit,p[3]],3),cols:3,optCls:"e"}}},
+];
+const GM=Object.fromEntries(G.map(g=>[g.id,g]));
+const FAN={ona:["Ona tili","🔤"],mat:["Matematika","🔢"],tab:["Tabiat","🌳"],ing:["English","🇬🇧"],rus:["Русский","🪆"],man:["Mantiq","🧩"]};
+const REW=[[15,"🥕"],[40,"🎀"],[80,"🎩"],[150,"🏡"],[250,"🌈"],[400,"👑"]];
+
+/* ============ SAQLASH ============ */
+const tg=window.Telegram&&Telegram.WebApp, inTg=!!(tg&&tg.initData);
+const cloud=inTg&&tg.isVersionAtLeast&&tg.isVersionAtLeast("6.9")?tg.CloudStorage:null;
+let S={v:1,name:CFG.name,stars:0,streak:0,last:0,adv:{d:0,n:0},days:{},lv:{},box:{},st:{}};
+const LS="zukko1";
+function load(cb){
+ let done=false;const fin=str=>{if(done)return;done=true;try{if(str){const o=JSON.parse(str);if(o&&o.v)S=Object.assign(S,o)}}catch(e){}cb()};
+ let local=null;try{local=localStorage.getItem(LS)}catch(e){}
+ if(!cloud)return fin(local);
+ setTimeout(()=>fin(local),3000);
+ try{cloud.getItem("zn",(e,n)=>{n=+n||0;if(e||!n)return fin(local);
+  cloud.getItems(Array.from({length:n},(_,i)=>"z"+i),(e2,vals)=>{if(e2||!vals)return fin(local);
+   fin(Array.from({length:n},(_,i)=>vals["z"+i]||"").join(""))})})}catch(e){fin(local)}
+}
+let saveT=0;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{
+ /* eski kunlarni tozalash */
+ const t=today();for(const d in S.days)if(+d<t-30)delete S.days[d];
+ const str=JSON.stringify(S);try{localStorage.setItem(LS,str)}catch(e){}
+ if(cloud){try{const parts=str.match(/[\s\S]{1,3500}/g)||[""];parts.forEach((p,i)=>cloud.setItem("z"+i,p));cloud.setItem("zn",""+parts.length)}catch(e){}}
+},400)}
+
+/* ============ OVOZ VA TEBRANISH ============ */
+let AC=null;
+function tone(seq){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();let t=AC.currentTime;
+ for(const[f,d]of seq){const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);t+=d*.8}}catch(e){}}
+const fx={ok(){tone([[660,.12],[880,.18]]);hap("success")},no(){tone([[300,.2]]);hap("error")},win(){tone([[523,.12],[659,.12],[784,.12],[1047,.3]]);hap("success")},tap(){try{tg&&tg.HapticFeedback.impactOccurred("light")}catch(e){}}};
+function hap(k){try{tg&&tg.HapticFeedback.notificationOccurred(k)}catch(e){}}
+const canSay=()=>"speechSynthesis"in window&&typeof SpeechSynthesisUtterance!=="undefined";
+function say(s){if(!s||!canSay())return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(s.t);u.lang=s.l;u.rate=.8;speechSynthesis.speak(u)}catch(e){}}
+
+/* ============ TAKRORLASH (uchta quti) ============ */
+const GAP=[0,1,3,7];
+function pickItem(g,L,used){
+ const pool=g.pool(L).filter(it=>!used.has(it.id));if(!pool.length)return one(g.pool(L));
+ if(!g.noBox){const t=today(),due=pool.filter(it=>{const b=S.box[g.id+":"+it.id];return b&&b[1]<=t});
+  if(due.length&&Math.random()<.6)return one(due)}
+ return one(pool)}
+function mark(g,it,ok){
+ const st=S.st[g.id]=S.st[g.id]||[0,0];st[1]++;if(ok)st[0]++;
+ if(g.noBox)return;const k=g.id+":"+it.id,b=S.box[k]||[0,0,0],t=today();
+ if(ok){b[0]=Math.min(3,b[0]+1);b[1]=t+GAP[b[0]]}else{b[0]=1;b[1]=t+1;b[2]=(b[2]||0)+1}
+ if(ok&&b[0]===1&&!b[2]){b[0]=2;b[1]=t+3} /* birinchi urinishda bilgani — to'g'ri 2-qutiga */
+ S.box[k]=b}
+const level=g=>Math.min(g.lv,(S.lv[g.id]||[1,0])[0]);
+
+/* ============ EKRANLAR ============ */
+let adv=null; /* kunlik sarguzasht: {list:[ids], i} */
+function advToday(){const d=today();const o=G.filter(g=>g.fan==="ona"),m=G.filter(g=>g.fan==="mat"),x=G.filter(g=>!["ona","mat"].includes(g.fan));
+ return[o[d%o.length].id,m[d%m.length].id,x[d%x.length].id]}
+function advState(){const d=today();if(S.adv.d!==d)S.adv={d,n:0};return S.adv}
+const hello=()=>{const h=new Date().getHours();return h<11?"Xayrli tong":h<18?"Salom":"Xayrli kech"};
+
+function home(){
+ adv=null;const a=advState(),done=a.n>=3;
+ const nx=REW.find(r=>S.stars<r[0]);
+ const msg=done?`Barakalla, ${esc(S.name)}! Bugungi sarguzasht tugadi. Ertaga ko'rishamiz! 👋`:a.n?`Zo'r ketyapsan, ${esc(S.name)}! Yana ${3-a.n} ta o'yin qoldi.`:`${hello()}, ${esc(S.name)}! Bugun nima o'ynaymiz?`;
+ app.innerHTML=`<div class="scr">
+  <div class="top"><span class="chip">⭐ ${S.stars}</span><span class="chip">🔥 ${S.streak} kun</span></div>
+  <div class="hi"><div class="bunny">${CFG.mascot}</div><div class="bub">${msg}</div></div>
+  <div class="shelf">${REW.map(r=>`<i class="${S.stars>=r[0]?"on":""}">${r[1]}</i>`).join("")}<span>${nx?`yana ${nx[0]-S.stars} ⭐`:""}</span></div>
+  ${done?`<button class="big g" id="go">🎉 Bugun tugadi<small>Xohlasang, pastdan o'yin tanla</small></button>`
+   :`<button class="big" id="go">▶ Bugungi sarguzasht<small>${a.n} / 3 o'yin</small></button>`}
+  <div class="sub">O'zing tanla</div>
+  <div class="tiles">${Object.entries(FAN).map(([k,v])=>`<button class="tile" style="--c:var(--${k})" data-f="${k}">${v[1]}<span>${v[0]}</span></button>`).join("")}</div>
+  <div class="grow"></div>
+  <div class="par" id="par">👨‍👩‍👧 Kattalar uchun — bosib turing</div></div>`;
+ $("#go").onclick=()=>{fx.tap();if(done)return;adv={list:advToday(),i:a.n};play(adv.list[adv.i])};
+ app.querySelectorAll(".tile").forEach(b=>b.onclick=()=>{fx.tap();list(b.dataset.f)});
+ let t=0;const p=$("#par"),st=()=>{t=setTimeout(parent,1200)},en=()=>clearTimeout(t);
+ p.addEventListener("touchstart",st,{passive:true});p.addEventListener("touchend",en);p.addEventListener("mousedown",st);p.addEventListener("mouseup",en);p.addEventListener("mouseleave",en);
+}
+function list(f){
+ app.innerHTML=`<div class="scr" style="--c:var(--${f})"><div class="top"><button class="back" id="bk">←</button><span style="font-size:22px">${FAN[f][1]} ${FAN[f][0]}</span><span style="width:48px"></span></div>
+ <div class="list" style="margin-top:12px">${G.filter(g=>g.fan===f).map(g=>`<button class="row" data-g="${g.id}"><b>${g.e}</b><div>${esc(g.n)}<small>${level(g)}-bosqich · ${g.lv} tadan</small></div></button>`).join("")}</div></div>`;
+ $("#bk").onclick=home;app.querySelectorAll(".row").forEach(b=>b.onclick=()=>{fx.tap();play(b.dataset.g)});
+}
+
+/* ---------- o'yin raundi ---------- */
+function play(gid){
+ const g=GM[gid],L=level(g),used=new Set();
+ if(g.memory)return memory(g,L);
+ const queue=[];for(let i=0;i<CFG.round;i++){const it=pickItem(g,L,used);used.add(it.id);queue.push({it,first:true})}
+ let pos=0,miss=0,total=queue.length;
+ const next=()=>{if(pos>=queue.length)return result(g,L,miss,total);ask(queue[pos])};
+ function ask(cur){
+  const q=g.make(cur.it,L);
+  const head=`<div class="top"><button class="back" id="x">✕</button><div class="dots">${Array.from({length:total},(_,i)=>`<i class="${i<total-(queue.length-pos)?"on":i===total-(queue.length-pos)?"cur":""}"></i>`).join("")}</div><span style="width:48px;text-align:center;font-size:26px">${g.e}</span></div>`;
+  const stage=`<div class="stage">${q.html||""}${q.pic?`<div class="pic ${q.picCls||""}">${q.pic}</div>`:""}${q.big!==undefined?`<div class="bigt ${q.bigCls||""}">${q.big}</div>`:""}
+   <div class="ask">${esc(q.q)}</div>${q.say&&canSay()?`<button class="say" id="say">🔊</button>`:""}<div id="slots"></div></div><div class="hint" id="hint"></div>`;
+  if(q.type==="build"){
+   app.innerHTML=`<div class="scr" style="--c:var(--${g.fan})">${head}${stage}<div class="opts ${q.wide?"":"c3"}" id="opts"></div></div>`;
+   const slots=[],sl=$("#slots"),op=$("#opts");let lock=false;
+   const draw=()=>{sl.innerHTML=`<div class="cells">${q.answer.map((_,i)=>`<span class="cell${slots[i]?"":" e"}" data-i="${i}">${slots[i]?esc(slots[i].p):"·"}</span>`).join("")}</div>`;
+    sl.querySelectorAll(".cell").forEach(c=>c.onclick=()=>{if(lock)return;const i=+c.dataset.i;if(slots[i]){slots[i].b.classList.remove("dim");slots.splice(i,1);draw()}})};
+   q.parts.forEach(p=>{const b=document.createElement("button");b.className="opt"+(q.wide?" t":"");b.textContent=p;op.appendChild(b);
+    b.onclick=()=>{if(lock||b.classList.contains("dim")||slots.length>=q.answer.length)return;fx.tap();slots.push({p,b});b.classList.add("dim");draw();
+     if(slots.length===q.answer.length){lock=true;const ok=slots.every((s,i)=>s.p===q.answer[i]);finish(ok,()=>{
+       sl.innerHTML=`<div class="cells">${q.answer.map(x=>`<span class="cell q">${esc(x)}</span>`).join("")}</div>`})}}});
+   draw();
+  }else{
+   app.innerHTML=`<div class="scr" style="--c:var(--${g.fan})">${head}${stage}<div class="opts c${q.cols||2}" id="opts">${q.opts.map((o,i)=>`<button class="opt ${q.optCls||""}" data-i="${i}">${o&&o.h?o.h:esc(o)}</button>`).join("")}</div></div>`;
+   const bs=[...app.querySelectorAll(".opt")];let lock=false;
+   bs.forEach(b=>b.onclick=()=>{if(lock)return;lock=true;const i=+b.dataset.i,ok=i===q.ans;
+    bs.forEach((x,j)=>{if(j===q.ans)x.classList.add("ok");else if(j===i)x.classList.add("no");else x.classList.add("dim")});
+    finish(ok)});
+  }
+  if($("#say")){$("#say").onclick=()=>say(q.say)}
+  $("#x").onclick=()=>{save();adv?home():list(g.fan)};
+  function finish(ok,showAns){
+   const h=$("#hint");
+   if(ok){fx.ok();h.className="hint g";h.textContent=one(["To'g'ri! 🎉","Barakalla! ⭐","Zo'r! 👏","Ofarin! 🌟"]);if(q.say)say(q.say)}
+   else{fx.no();h.className="hint";h.textContent="Mana to'g'ri javob. Yana urinib ko'ramiz!";showAns&&showAns()}
+   if(cur.first){mark(g,cur.it,ok);if(!ok)miss++}
+   if(!ok&&cur.first)queue.splice(Math.min(queue.length,pos+3),0,{it:cur.it,first:false});
+   pos++;setTimeout(next,ok?850:1900)}
+ }
+ next();
+}
+function memory(g,L){
+ const q=g.make(null,L),cards=sh(q.pairs.flatMap((p,i)=>[{k:i,v:p[0]},{k:i,v:p[1]}]));
+ let open=[],found=0,tries=0,lock=false;
+ const face=v=>typeof v==="string"?[v,""]:v.t?[v.t,""]:v.d?[v.d," d"]:[v.w," t"];
+ app.innerHTML=`<div class="scr" style="--c:var(--man)"><div class="top"><button class="back" id="x">✕</button><span>Juftini top</span><span style="width:48px;text-align:center;font-size:26px">${g.e}</span></div>
+  <div class="stage"><div class="mem c${q.cols}">${cards.map((c,i)=>`<button class="card${face(c.v)[1]}" data-i="${i}">${esc(face(c.v)[0])}</button>`).join("")}</div></div><div class="hint" id="hint"></div></div>`;
+ $("#x").onclick=()=>adv?home():list(g.fan);
+ const bs=[...app.querySelectorAll(".card")];
+ bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(lock||b.classList.contains("up")||b.classList.contains("done"))return;fx.tap();b.classList.add("up");open.push(i);
+  if(open.length<2)return;tries++;lock=true;const[a,c]=open;open=[];
+  if(cards[a].k===cards[c].k){fx.ok();setTimeout(()=>{[a,c].forEach(j=>{bs[j].classList.remove("up");bs[j].classList.add("done")});lock=false;
+    if(++found===q.pairs.length){const extra=tries-q.pairs.length;const miss=extra<=2?0:extra<=5?2:4;const st=S.st[g.id]=S.st[g.id]||[0,0];st[1]+=tries;st[0]+=q.pairs.length;setTimeout(()=>result(g,L,miss,0),500)}},350)}
+  else{setTimeout(()=>{[a,c].forEach(j=>bs[j].classList.remove("up"));lock=false},900)}});
+}
+
+/* ---------- natija ---------- */
+function result(g,L,miss,total){
+ const stars=miss===0?3:miss<=2?2:1;S.stars+=stars;
+ const t=today();S.days[t]=(S.days[t]||0)+1;
+ const lv=S.lv[g.id]||[1,0];let up=false;
+ if(miss<=1){lv[1]++;if(lv[1]>=2&&lv[0]<g.lv){lv[0]++;lv[1]=0;up=true}}else if(miss>=4&&lv[0]>1){lv[0]--;lv[1]=0}else lv[1]=0;
+ S.lv[g.id]=lv;
+ let advDone=false;
+ if(adv){const a=advState();a.n=Math.max(a.n,adv.i+1);adv.i++;
+  if(a.n>=3&&S.last!==t){S.streak=S.last===t-1?S.streak+1:1;S.last=t;advDone=true}}
+ save();fx.win();confetti();
+ const msg=up?`Yangi bosqich ochildi: ${lv[0]}-bosqich! 🚀`:miss===0?"Birorta ham xato yo'q!":miss<=2?"Juda yaxshi! Xatolarni ertaga yana ko'ramiz.":"Yaxshi harakat! Bu o'yinni yana mashq qilamiz.";
+ const more=adv&&adv.i<3;
+ app.innerHTML=`<div class="scr res"><div class="stars">${[1,2,3].map(i=>`<i class="${i<=stars?"on":""}">⭐</i>`).join("")}</div>
+  <div class="h1">${one(["Barakalla!","Ofarin!","Zo'r!","Qoyil!"])}</div><div class="bunny">${CFG.mascot}</div>
+  <div class="bub c">${msg}${advDone?"<br>Bugungi sarguzasht tugadi! 🎉":""}</div>
+  ${more?`<button class="big g" id="nx">Keyingi o'yin →</button>`:`<button class="big g" id="hm">${advDone?"Ertaga ko'rishamiz 👋":"Bosh sahifa"}</button><button class="big w" id="ag" style="margin-top:14px;font-size:20px;padding:14px">🔁 Yana o'ynash</button>`}</div>`;
+ if(more)$("#nx").onclick=()=>play(adv.list[adv.i]);
+ else{$("#hm").onclick=home;$("#ag").onclick=()=>{adv=null;play(g.id)}}
+}
+function confetti(){const c=document.createElement("div");c.className="conf";
+ for(let i=0;i<22;i++){const e=document.createElement("i");e.textContent=one(["⭐","🎉","🥕","✨","🌸"]);e.style.left=rnd(100)+"%";e.style.animationDuration=(1.6+Math.random()*1.6)+"s";e.style.animationDelay=Math.random()*.5+"s";c.appendChild(e)}
+ document.body.appendChild(c);setTimeout(()=>c.remove(),3800)}
+
+/* ---------- kattalar uchun ---------- */
+function parent(){
+ const t=today(),wd=["Ya","Du","Se","Cho","Pa","Ju","Sha"];
+ const wk=Array.from({length:7},(_,i)=>{const d=t-6+i;return{n:S.days[d]||0,l:wd[new Date(d*864e5).getUTCDay()]}}),mx=Math.max(3,...wk.map(w=>w.n));
+ const fans=Object.keys(FAN).map(f=>{let ok=0,all=0;G.filter(g=>g.fan===f).forEach(g=>{const s=S.st[g.id];if(s){ok+=s[0];all+=s[1]}});return[f,ok,all]});
+ const hard=Object.entries(S.box).filter(([k,b])=>b[2]&&b[0]<3).sort((a,b)=>b[1][2]-a[1][2]).slice(0,12);
+ const known=Object.values(S.box).filter(b=>b[0]>=3).length;
+ app.innerHTML=`<div class="scr pr"><div class="top"><button class="back" id="bk">←</button><span style="font-size:20px">Hisobot</span><span style="width:48px"></span></div>
+  <h2>Oxirgi 7 kun (o'ynalgan o'yinlar)</h2><div class="box"><div class="week">${wk.map(w=>`<div><span>${w.n||""}</span><i style="height:${w.n/mx*70}px"></i>${w.l}</div>`).join("")}</div></div>
+  <h2>Umumiy</h2><div class="box"><div class="kv"><span>Yulduzlar</span><b>⭐ ${S.stars}</b></div><div class="kv"><span>Ketma-ket kunlar</span><b>🔥 ${S.streak}</b></div><div class="kv"><span>Mustahkam biladi (3-quti)</span><b>${known} ta</b></div></div>
+  <h2>Fanlar bo'yicha to'g'ri javoblar</h2><div class="box">${fans.map(([f,ok,all])=>`<div class="kv"><span>${FAN[f][1]} ${FAN[f][0]}</span><b>${all?Math.round(ok/all*100)+"% · "+all+" savol":"—"}</b></div>`).join("")}</div>
+  <h2>Qiynalyapti</h2><div class="box">${hard.length?hard.map(([k,b])=>{const[g,id]=k.split(/:(.*)/);return`<span class="tag">${GM[g]?GM[g].e:""} ${esc(id)} · ${b[2]}×</span>`}).join(""):"Hozircha xato yo'q yoki hammasi tuzatilgan 👍"}</div>
+  <h2>Bosqichlar</h2><div class="box">${G.map(g=>`<div class="kv"><span>${g.e} ${esc(g.n)}</span><b>${level(g)} / ${g.lv}</b></div>`).join("")}</div>
+  <h2>Bolaning ismi</h2><input id="nm" value="${esc(S.name)}" maxlength="20">
+  <button class="lnk" id="rs">Hamma natijalarni o'chirish</button></div>`;
+ $("#bk").onclick=()=>{const v=$("#nm").value.trim();if(v)S.name=v;save();home()};
+ $("#rs").onclick=()=>{if(confirm("Hamma yulduz va natijalar o'chadi. Davom etilsinmi?")){const n=S.name;S={v:1,name:n,stars:0,streak:0,last:0,adv:{d:0,n:0},days:{},lv:{},box:{},st:{}};save();home()}};
+}
+
+/* ============ ISHGA TUSHIRISH ============ */
+try{if(tg){tg.ready();tg.expand();tg.setHeaderColor&&tg.setHeaderColor("#FFF6E5");tg.setBackgroundColor&&tg.setBackgroundColor("#FFF6E5");tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}}catch(e){}
+app.innerHTML=`<div class="scr res"><div class="bunny">${CFG.mascot}</div></div>`;
+load(home);
+window.__zukko={G,GM,S:()=>S,play,home,parent,level};
+</script>
+</body>
+</html>
